@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kettlebell-v5';
+const CACHE_NAME = 'kettlebell-v6';
 const BASE = '/gym_app';
 const PRECACHE_FILES = __PRECACHE_FILES__;
 
@@ -36,6 +36,7 @@ self.addEventListener('fetch', (event) => {
       if (isNavigate) {
         return caches.match(BASE + '/');
       }
+      return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
     })
   );
 });
