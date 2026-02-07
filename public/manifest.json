@@ -1,0 +1,12 @@
+{
+  "name": "Kettlebell Workout",
+  "short_name": "Kettlebell",
+  "start_url": "/gym_app/",
+  "scope": "/gym_app/",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "icons": [
+    { "src": "/gym_app/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

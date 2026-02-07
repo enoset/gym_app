@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { WorkoutGoal } from '@/lib/types';
+import { generateWorkout } from '@/lib/generator';
+import { getHistory, saveWorkout } from '@/lib/storage';
 
 const goals: { key: WorkoutGoal; label: string; desc: string }[] = [
   { key: 'strength', label: 'Strength', desc: 'Heavy weights, low reps. Build raw strength.' },
@@ -18,13 +20,10 @@ export default function Home() {
   async function generate(goal: WorkoutGoal) {
     setLoading(goal);
     try {
-      const res = await fetch('/api/workouts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal }),
-      });
-      const workout = await res.json();
-      router.push(`/workout/${workout.id}`);
+      const history = await getHistory();
+      const workout = generateWorkout(goal, history);
+      await saveWorkout(workout);
+      router.push(`/workout?id=${workout.id}`);
     } catch {
       alert('Failed to generate workout');
       setLoading(null);
@@ -39,7 +38,7 @@ export default function Home() {
       </div>
 
       <h1>Kettlebell Workout</h1>
-      <p className="muted mb-24">
+      <p className="muted mb-16">
         Pick a goal. Get a full-body kettlebell circuit with a fresh exercise combo each time.
       </p>
 

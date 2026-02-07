@@ -1,47 +1,52 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import { Workout, WorkoutHistory } from './types';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const HISTORY_FILE = path.join(DATA_DIR, 'workouts.json');
+const STORAGE_KEY = 'kettlebell-workouts';
 
-async function ensureDataDir() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-}
-
-export async function getHistory(): Promise<WorkoutHistory> {
-  await ensureDataDir();
+function readStorage(): WorkoutHistory {
+  if (typeof window === 'undefined') return { workouts: [] };
   try {
-    const data = await fs.readFile(HISTORY_FILE, 'utf-8');
-    return JSON.parse(data);
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : { workouts: [] };
   } catch {
     return { workouts: [] };
   }
 }
 
-async function saveHistory(history: WorkoutHistory): Promise<void> {
-  await ensureDataDir();
-  await fs.writeFile(HISTORY_FILE, JSON.stringify(history, null, 2));
+function writeStorage(history: WorkoutHistory): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+export async function getHistory(): Promise<WorkoutHistory> {
+  return readStorage();
 }
 
 export async function saveWorkout(workout: Workout): Promise<void> {
-  const history = await getHistory();
+  const history = readStorage();
   history.workouts.push(workout);
-  await saveHistory(history);
+  writeStorage(history);
 }
 
 export async function updateWorkout(workout: Workout): Promise<void> {
-  const history = await getHistory();
+  const history = readStorage();
   const index = history.workouts.findIndex(w => w.id === workout.id);
   if (index === -1) {
     history.workouts.push(workout);
   } else {
     history.workouts[index] = workout;
   }
-  await saveHistory(history);
+  writeStorage(history);
+}
+
+export async function deleteWorkout(id: string): Promise<boolean> {
+  const history = readStorage();
+  const index = history.workouts.findIndex(w => w.id === id);
+  if (index === -1) return false;
+  history.workouts.splice(index, 1);
+  writeStorage(history);
+  return true;
 }
 
 export async function getWorkout(id: string): Promise<Workout | null> {
-  const history = await getHistory();
+  const history = readStorage();
   return history.workouts.find(w => w.id === id) || null;
 }

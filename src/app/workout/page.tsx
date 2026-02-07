@@ -1,11 +1,21 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Workout } from '@/lib/types';
+import { getWorkout, updateWorkout } from '@/lib/storage';
 
 export default function WorkoutPage() {
-  const params = useParams();
+  return (
+    <Suspense fallback={<div className="center mt-16">Loading...</div>}>
+      <WorkoutContent />
+    </Suspense>
+  );
+}
+
+function WorkoutContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const router = useRouter();
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [currentRound, setCurrentRound] = useState(1);
@@ -17,19 +27,19 @@ export default function WorkoutPage() {
 
   // Load workout
   useEffect(() => {
-    fetch(`/api/workouts/${params.id}`)
-      .then((r) => r.json())
-      .then((data: Workout) => {
-        setWorkout(data);
-        setCurrentRound(data.currentRound || 1);
-        // Pre-fill weights from suggested weights
-        const w: Record<string, number | null> = {};
-        data.exercises.forEach((e) => {
-          w[e.exerciseId] = e.suggestedWeight;
-        });
-        setWeights(w);
+    if (!id) return;
+    getWorkout(id).then((data) => {
+      if (!data) return;
+      setWorkout(data);
+      setCurrentRound(data.currentRound || 1);
+      // Pre-fill weights from suggested weights
+      const w: Record<string, number | null> = {};
+      data.exercises.forEach((e) => {
+        w[e.exerciseId] = e.suggestedWeight;
       });
-  }, [params.id]);
+      setWeights(w);
+    });
+  }, [id]);
 
   // Countdown timer
   useEffect(() => {
@@ -59,12 +69,8 @@ export default function WorkoutPage() {
     setTimerRunning(false);
   };
 
-  async function saveToServer(updated: Workout) {
-    await fetch(`/api/workouts/${updated.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated),
-    });
+  async function saveProgress(updated: Workout) {
+    await updateWorkout(updated);
   }
 
   function buildUpdatedWorkout(): Workout {
@@ -99,14 +105,14 @@ export default function WorkoutPage() {
         currentRound,
       };
       setWorkout(updated);
-      saveToServer(updated);
+      saveProgress(updated);
     }
   }
 
   function finishEarly() {
     if (!workout) return;
     const updated = { ...buildUpdatedWorkout(), completed: true };
-    saveToServer(updated);
+    saveProgress(updated);
     router.push('/history');
   }
 
@@ -127,17 +133,22 @@ export default function WorkoutPage() {
         </div>
         <h1>Workout Complete!</h1>
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
             <span className="badge">{workout.goalLabel}</span>
             <span className="small muted">
               {new Date(workout.date).toLocaleDateString()}
             </span>
           </div>
           {workout.exercises.map((e, i) => (
-            <div key={i} className="exercise-row">
-              <span>{e.name}</span>
+            <div key={i} className="exercise-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <img
+                src={`/exercises/${e.exerciseId}.png`}
+                alt={e.name}
+                style={{ width: 30, height: 30, borderRadius: 5, flexShrink: 0 }}
+              />
+              <span style={{ flex: 1 }}>{e.name}</span>
               <span className="muted">
-                {e.weight ? `${e.weight} kg` : '—'} &times; {e.reps}
+                {e.weight ? `${e.weight} lbs` : '—'} &times; {e.reps}
               </span>
             </div>
           ))}
@@ -158,17 +169,24 @@ export default function WorkoutPage() {
     const nextExercise = workout.exercises[currentExIdx];
     return (
       <div>
-        <h2 className="center" style={{ marginTop: 40 }}>
+        <h2 className="center" style={{ marginTop: 24 }}>
           {isRoundRest ? `Rest Before Round ${currentRound}` : 'Rest'}
         </h2>
         <div className="timer-display">{formatTime(restTime)}</div>
-        <p className="center muted mb-16">
+        <p className="center muted mb-8">
           {isRoundRest ? 'Longer rest between rounds' : 'Short rest between exercises'}
         </p>
         {nextExercise && (
-          <p className="center mb-24">
-            Next: <strong>{nextExercise.name}</strong>
-          </p>
+          <div className="center mb-16">
+            <img
+              src={`/exercises/${nextExercise.exerciseId}.png`}
+              alt={nextExercise.name}
+              style={{ width: 64, height: 64, borderRadius: 10, marginBottom: 6 }}
+            />
+            <p>
+              Next: <strong>{nextExercise.name}</strong>
+            </p>
+          </div>
         )}
         <button className="btn-secondary" onClick={skipRest}>
           Skip Rest
@@ -185,7 +203,7 @@ export default function WorkoutPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
         <span className="badge">{workout.goalLabel}</span>
         <span className="small muted">
           Round {currentRound}/{workout.rounds}
@@ -193,8 +211,8 @@ export default function WorkoutPage() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ background: '#3a3a5c', borderRadius: 4, height: 6, marginBottom: 16 }}>
-        <div style={{ background: '#4361ee', borderRadius: 4, height: 6, width: `${progress * 100}%`, transition: 'width 0.3s' }} />
+      <div style={{ background: '#333', borderRadius: 4, height: 4, marginBottom: 10 }}>
+        <div style={{ background: '#4361ee', borderRadius: 4, height: 4, width: `${progress * 100}%`, transition: 'width 0.3s' }} />
       </div>
 
       <p className="small muted mb-8">
@@ -203,16 +221,21 @@ export default function WorkoutPage() {
 
       {/* Current exercise card */}
       <div className="card center">
-        <h2 style={{ marginBottom: 16 }}>{current.name}</h2>
-        <p style={{ fontSize: 40, fontWeight: 700, marginBottom: 8 }}>
+        <img
+          src={`/exercises/${current.exerciseId}.png`}
+          alt={current.name}
+          style={{ width: 80, height: 80, borderRadius: 10, marginBottom: 8 }}
+        />
+        <h2 style={{ marginBottom: 4 }}>{current.name}</h2>
+        <p style={{ fontSize: 32, fontWeight: 700, marginBottom: 4 }}>
           {current.reps} reps
         </p>
 
-        <div className="mt-16 mb-16">
-          <label className="small muted" style={{ display: 'block', marginBottom: 8 }}>
-            Weight (kg)
+        <div style={{ margin: '8px 0' }}>
+          <label className="small muted" style={{ display: 'block', marginBottom: 4 }}>
+            Weight (lbs)
             {current.suggestedWeight !== null && (
-              <span> &mdash; last used: {current.suggestedWeight} kg</span>
+              <span> &mdash; last used: {current.suggestedWeight} lbs</span>
             )}
           </label>
           <input
@@ -225,7 +248,7 @@ export default function WorkoutPage() {
                 [current.exerciseId]: e.target.value ? parseFloat(e.target.value) : null,
               }))
             }
-            placeholder="kg"
+            placeholder="lbs"
             step="0.5"
             min="0"
           />
@@ -246,8 +269,13 @@ export default function WorkoutPage() {
           if (i < currentExIdx) cls += ' exercise-done';
           if (i === currentExIdx) cls += ' exercise-current';
           return (
-            <div key={i} className={cls}>
-              <span>
+            <div key={i} className={cls} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <img
+                src={`/exercises/${e.exerciseId}.png`}
+                alt={e.name}
+                style={{ width: 30, height: 30, borderRadius: 5, flexShrink: 0 }}
+              />
+              <span style={{ flex: 1, fontSize: 14 }}>
                 {i === currentExIdx && '▶ '}
                 {e.name}
               </span>
@@ -257,7 +285,7 @@ export default function WorkoutPage() {
         })}
       </div>
 
-      <button className="btn-secondary" style={{ marginTop: 24 }} onClick={finishEarly}>
+      <button className="btn-secondary" style={{ marginTop: 12 }} onClick={finishEarly}>
         Finish Early &amp; Save
       </button>
     </div>

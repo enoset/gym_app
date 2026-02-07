@@ -2,19 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import { Workout } from '@/lib/types';
+import { getHistory, deleteWorkout } from '@/lib/storage';
 
 export default function HistoryPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/workouts')
-      .then((r) => r.json())
-      .then((data) => {
-        setWorkouts(data);
-        setLoaded(true);
-      });
+    getHistory().then((history) => {
+      setWorkouts([...history.workouts].reverse());
+      setLoaded(true);
+    });
   }, []);
+
+  async function handleDelete(id: string) {
+    if (!confirm('Delete this workout?')) return;
+    await deleteWorkout(id);
+    setWorkouts((prev) => prev.filter((w) => w.id !== id));
+  }
 
   return (
     <div>
@@ -32,31 +37,58 @@ export default function HistoryPage() {
       )}
 
       {workouts.map((w) => (
-        <a key={w.id} href={`/workout/${w.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+        <div key={w.id} className="card">
+          <a href={`/workout?id=${w.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
               <span className="badge">{w.goalLabel}</span>
-              <span style={{ color: w.completed ? '#06d6a0' : '#f72585', fontSize: 12 }}>
+              <span style={{ color: w.completed ? '#06d6a0' : '#f72585', fontSize: 11 }}>
                 {w.completed ? 'Completed' : 'Incomplete'}
               </span>
             </div>
-            <p className="small muted mb-8">
+            <p className="small muted" style={{ marginBottom: 4 }}>
               {new Date(w.date).toLocaleDateString()} at{' '}
               {new Date(w.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
-            <p className="small">
-              {w.exercises.map((e) => e.name).join(' → ')}
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', flex: 1 }}>
+                {w.exercises.map((e, i) => (
+                  <img
+                    key={i}
+                    src={`/exercises/${e.exerciseId}.png`}
+                    alt={e.name}
+                    title={e.name}
+                    style={{ width: 28, height: 28, borderRadius: 5 }}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={(ev) => { ev.preventDefault(); handleDelete(w.id); }}
+                style={{
+                  padding: '8px 20px',
+                  fontSize: 14,
+                  background: '#c62828',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  width: 'auto',
+                  fontWeight: 600,
+                  flexShrink: 0,
+                }}
+              >
+                Delete
+              </button>
+            </div>
             <p className="small muted" style={{ marginTop: 4 }}>
               {w.rounds} rounds &bull; {w.exercises.length} exercises &bull; {w.exercises[0]?.reps} reps
             </p>
             {w.exercises.some((e) => e.weight) && (
               <p className="small muted" style={{ marginTop: 4 }}>
-                Weights: {w.exercises.filter((e) => e.weight).map((e) => `${e.name}: ${e.weight}kg`).join(', ')}
+                Weights: {w.exercises.filter((e) => e.weight).map((e) => `${e.name}: ${e.weight} lbs`).join(', ')}
               </p>
             )}
-          </div>
-        </a>
+          </a>
+        </div>
       ))}
     </div>
   );

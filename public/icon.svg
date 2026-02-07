@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#111"/>
+  <g transform="translate(256,256)">
+    <!-- Kettlebell handle -->
+    <path d="M-40,-100 Q-40,-150 0,-150 Q40,-150 40,-100" stroke="#4361ee" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <!-- Kettlebell body -->
+    <ellipse cx="0" cy="-20" rx="70" ry="75" fill="#4361ee"/>
+    <!-- Inner circle highlight -->
+    <ellipse cx="0" cy="-30" rx="30" ry="30" fill="#111"/>
+  </g>
+</svg>
