@@ -44,6 +44,29 @@ function WorkoutContent() {
     });
   }, [id]);
 
+  // Warn before leaving an active workout
+  useEffect(() => {
+    if (!workout || workout.completed) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    // Push a dummy history entry so back/swipe triggers popstate instead of leaving
+    window.history.pushState(null, '', window.location.href);
+    const popHandler = () => {
+      if (confirm('Leave workout? Your progress will be lost unless you save.')) {
+        router.push('/');
+      } else {
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+    window.addEventListener('popstate', popHandler);
+    return () => {
+      window.removeEventListener('beforeunload', handler);
+      window.removeEventListener('popstate', popHandler);
+    };
+  }, [workout, router]);
+
   // Countdown timer
   useEffect(() => {
     if (!timerRunning || restTime <= 0) return;
