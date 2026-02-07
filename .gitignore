@@ -5,5 +5,8 @@ out/
 next-env.d.ts
 data/*.json
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Windows null device artifact
 nul
