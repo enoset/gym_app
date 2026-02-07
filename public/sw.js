@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kettlebell-v4';
+const CACHE_NAME = 'kettlebell-v5';
 const BASE = '/gym_app';
 const PRECACHE_FILES = __PRECACHE_FILES__;
 
@@ -21,8 +21,9 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const isNavigate = event.request.mode === 'navigate';
   event.respondWith(
-    caches.match(event.request).then((cached) => {
+    caches.match(event.request, { ignoreSearch: isNavigate }).then((cached) => {
       if (cached) return cached;
       return fetch(event.request).then((response) => {
         if (response.ok && event.request.method === 'GET') {
@@ -32,7 +33,7 @@ self.addEventListener('fetch', (event) => {
         return response;
       });
     }).catch(() => {
-      if (event.request.mode === 'navigate') {
+      if (isNavigate) {
         return caches.match(BASE + '/');
       }
     })
