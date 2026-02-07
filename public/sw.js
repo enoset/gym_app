@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kettlebell-v1';
+const CACHE_NAME = 'kettlebell-v2';
 const BASE = '/gym_app';
 
 self.addEventListener('install', (event) => {
