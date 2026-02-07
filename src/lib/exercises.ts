@@ -1,0 +1,142 @@
+import { Exercise } from './types';
+
+export const exercises: Exercise[] = [
+  {
+    id: 'thruster',
+    name: 'Thruster',
+    muscleGroups: ['quadriceps', 'glutes', 'shoulders'],
+    isCompound: true,
+  },
+  {
+    id: 'sumo_squat',
+    name: 'Sumo Squat',
+    muscleGroups: ['quadriceps', 'glutes'],
+    isCompound: false,
+  },
+  {
+    id: 'stiff_leg_deadlift',
+    name: 'Stiff Leg Deadlift',
+    muscleGroups: ['hamstrings', 'lower_back'],
+    isCompound: false,
+  },
+  {
+    id: 'sit_up',
+    name: 'Sit-Up',
+    muscleGroups: ['abs'],
+    isCompound: false,
+  },
+  {
+    id: 'single_arm_bent_over_row',
+    name: 'Single Arm Bent-over Row',
+    muscleGroups: ['back', 'traps'],
+    isCompound: false,
+  },
+  {
+    id: 'side_lunge',
+    name: 'Side Lunge',
+    muscleGroups: ['glutes', 'quadriceps'],
+    isCompound: false,
+  },
+  {
+    id: 'lunge',
+    name: 'Lunge',
+    muscleGroups: ['glutes', 'quadriceps'],
+    isCompound: false,
+  },
+  {
+    id: 'front_squat',
+    name: 'Front Squat',
+    muscleGroups: ['quadriceps', 'glutes'],
+    isCompound: false,
+  },
+  {
+    id: 'farmers_carry',
+    name: "Farmer's Carry",
+    muscleGroups: ['traps', 'glutes', 'abs'],
+    isCompound: true,
+  },
+  {
+    id: 'deadlift',
+    name: 'Deadlift',
+    muscleGroups: ['lower_back', 'glutes', 'hamstrings'],
+    isCompound: false,
+  },
+  {
+    id: 'backward_lunge',
+    name: 'Backward Lunge',
+    muscleGroups: ['glutes', 'quadriceps'],
+    isCompound: false,
+  },
+  {
+    id: 'bent_over_rear_delt_row',
+    name: 'Bent-over Rear Delt Row',
+    muscleGroups: ['shoulders'],
+    isCompound: false,
+  },
+  {
+    id: 'bent_over_row',
+    name: 'Bent-over Row',
+    muscleGroups: ['back', 'traps'],
+    isCompound: false,
+  },
+  {
+    id: 'clean_and_press',
+    name: 'Clean and Press',
+    muscleGroups: ['shoulders', 'glutes', 'back'],
+    isCompound: true,
+  },
+  {
+    id: 'curtsey_lunge',
+    name: 'Curtsey Lunge',
+    muscleGroups: ['glutes', 'quadriceps'],
+    isCompound: false,
+  },
+  {
+    id: 'floor_bent_arm_pullover',
+    name: 'Floor Bent-Arm Pullover',
+    muscleGroups: ['back', 'traps'],
+    isCompound: false,
+  },
+  {
+    id: 'kettlebell_swing',
+    name: 'Kettlebell Swing',
+    muscleGroups: ['glutes', 'hamstrings', 'back'],
+    isCompound: true,
+  },
+  {
+    id: 'lateral_raise',
+    name: 'Lateral Raise',
+    muscleGroups: ['shoulders'],
+    isCompound: false,
+  },
+  {
+    id: 'overhead_press',
+    name: 'Overhead Press',
+    muscleGroups: ['shoulders'],
+    isCompound: false,
+  },
+  {
+    id: 'renegade_row',
+    name: 'Renegade Row',
+    muscleGroups: ['abs', 'back'],
+    isCompound: true,
+  },
+  {
+    id: 'single_leg_deadlift',
+    name: 'Single Leg Deadlift',
+    muscleGroups: ['hamstrings', 'glutes'],
+    isCompound: false,
+  },
+  {
+    id: 'turkish_get_up',
+    name: 'Turkish Get Up',
+    muscleGroups: ['abs', 'shoulders', 'glutes'],
+    isCompound: true,
+  },
+  {
+    id: 'windmill',
+    name: 'Windmill',
+    muscleGroups: ['abs'],
+    isCompound: false,
+  },
+];
