@@ -2,6 +2,7 @@
 const nextConfig = {
   output: 'export',
   basePath: '/gym_app',
+  trailingSlash: true,
   images: { unoptimized: true },
 };
 
