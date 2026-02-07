@@ -7,6 +7,8 @@
   "background_color": "#111111",
   "theme_color": "#111111",
   "icons": [
+    { "src": "/gym_app/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/gym_app/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "/gym_app/icon.svg", "sizes": "any", "type": "image/svg+xml" }
   ]
 }

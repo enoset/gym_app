@@ -5,7 +5,7 @@ import { RegisterSW } from './register-sw';
 export const metadata: Metadata = {
   title: 'Kettlebell Workout',
   description: 'Kettlebell circuit workout recommender',
-  manifest: '/manifest.json',
+  manifest: '/gym_app/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -28,8 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="icon" href="/gym_app/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/gym_app/icon.svg" />
       </head>
       <body>
         {children}
