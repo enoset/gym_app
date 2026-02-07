@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Workout } from '@/lib/types';
 import { getHistory, deleteWorkout } from '@/lib/storage';
+
+const BASE_PATH = '/gym_app';
 
 export default function HistoryPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -24,8 +27,8 @@ export default function HistoryPage() {
   return (
     <div>
       <div className="nav">
-        <a href="/">Home</a>
-        <a href="/history"><strong>History</strong></a>
+        <Link href="/">Home</Link>
+        <Link href="/history"><strong>History</strong></Link>
       </div>
 
       <h1>Workout History</h1>
@@ -38,7 +41,7 @@ export default function HistoryPage() {
 
       {workouts.map((w) => (
         <div key={w.id} className="card">
-          <a href={`/workout?id=${w.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link href={`/workout?id=${w.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
               <span className="badge">{w.goalLabel}</span>
               <span style={{ color: w.completed ? '#06d6a0' : '#f72585', fontSize: 11 }}>
@@ -54,7 +57,7 @@ export default function HistoryPage() {
                 {w.exercises.map((e, i) => (
                   <img
                     key={i}
-                    src={`/exercises/${e.exerciseId}.png`}
+                    src={`${BASE_PATH}/exercises/${e.exerciseId}.png`}
                     alt={e.name}
                     title={e.name}
                     style={{ width: 28, height: 28, borderRadius: 5 }}
@@ -87,7 +90,7 @@ export default function HistoryPage() {
                 Weights: {w.exercises.filter((e) => e.weight).map((e) => `${e.name}: ${e.weight} lbs`).join(', ')}
               </p>
             )}
-          </a>
+          </Link>
         </div>
       ))}
     </div>

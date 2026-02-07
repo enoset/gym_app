@@ -2,8 +2,11 @@
 
 import { Suspense, useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Workout } from '@/lib/types';
 import { getWorkout, updateWorkout } from '@/lib/storage';
+
+const BASE_PATH = '/gym_app';
 
 export default function WorkoutPage() {
   return (
@@ -128,8 +131,8 @@ function WorkoutContent() {
     return (
       <div>
         <div className="nav">
-          <a href="/">Home</a>
-          <a href="/history">History</a>
+          <Link href="/">Home</Link>
+          <Link href="/history">History</Link>
         </div>
         <h1>Workout Complete!</h1>
         <div className="card">
@@ -142,7 +145,7 @@ function WorkoutContent() {
           {workout.exercises.map((e, i) => (
             <div key={i} className="exercise-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <img
-                src={`/exercises/${e.exerciseId}.png`}
+                src={`${BASE_PATH}/exercises/${e.exerciseId}.png`}
                 alt={e.name}
                 style={{ width: 30, height: 30, borderRadius: 5, flexShrink: 0 }}
               />
@@ -179,7 +182,7 @@ function WorkoutContent() {
         {nextExercise && (
           <div className="center mb-16">
             <img
-              src={`/exercises/${nextExercise.exerciseId}.png`}
+              src={`${BASE_PATH}/exercises/${nextExercise.exerciseId}.png`}
               alt={nextExercise.name}
               style={{ width: 64, height: 64, borderRadius: 10, marginBottom: 6 }}
             />
@@ -222,7 +225,7 @@ function WorkoutContent() {
       {/* Current exercise card */}
       <div className="card center">
         <img
-          src={`/exercises/${current.exerciseId}.png`}
+          src={`${BASE_PATH}/exercises/${current.exerciseId}.png`}
           alt={current.name}
           style={{ width: 80, height: 80, borderRadius: 10, marginBottom: 8 }}
         />
@@ -271,7 +274,7 @@ function WorkoutContent() {
           return (
             <div key={i} className={cls} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <img
-                src={`/exercises/${e.exerciseId}.png`}
+                src={`${BASE_PATH}/exercises/${e.exerciseId}.png`}
                 alt={e.name}
                 style={{ width: 30, height: 30, borderRadius: 5, flexShrink: 0 }}
               />

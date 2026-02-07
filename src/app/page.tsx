@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { WorkoutGoal } from '@/lib/types';
 import { generateWorkout } from '@/lib/generator';
 import { getHistory, saveWorkout } from '@/lib/storage';
@@ -33,8 +34,8 @@ export default function Home() {
   return (
     <div>
       <div className="nav">
-        <a href="/"><strong>Home</strong></a>
-        <a href="/history">History</a>
+        <Link href="/"><strong>Home</strong></Link>
+        <Link href="/history">History</Link>
       </div>
 
       <h1>Kettlebell Workout</h1>
